@@ -17,13 +17,16 @@
                               (assoc :cid cid :message message :type type)
                               validate-fn)
           original-logger (original-logger-gen {:cid cid})]
-      (log/log original-logger message type normalized-data))))
+      (log/log original-logger (:message normalized-data) type normalized-data))))
+
+(defn- generate-coercer [schema coercer]
+  (or coercer #(s/validate schema %)))
 
 (defn generator
   ([] (generator {}))
-  ([{:keys [logger schema]
+  ([{:keys [logger schema coercer]
      :or {logger log/default-logger-gen, schema LoggerMessage}}]
    (fn [{:keys [mocked cid]}]
      (if mocked
-       (->Logger cid #(logger (assoc % :mocked true)) #(s/validate schema %))
-       (->Logger cid logger #(s/validate schema %))))))
+       (->Logger cid #(logger (assoc % :mocked true)) (generate-coercer schema coercer))
+       (->Logger cid logger (generate-coercer schema coercer))))))
