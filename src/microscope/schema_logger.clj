@@ -7,6 +7,7 @@
                     :type (s/enum :info :warning :error :fatal)
                     (s/optional-key :payload) s/Str
                     (s/optional-key :meta) s/Str
+                    (s/optional-key :additional-info) s/Str
                     (s/optional-key :exception) s/Str
                     (s/optional-key :backtrace) s/Str})
 
